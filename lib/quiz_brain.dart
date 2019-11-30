@@ -30,10 +30,15 @@ class QuizBrain {
         true)
   ];
 
-  void nextQuestion() {
-    if (_questionNumber < _questionBank.length - 1) {
+  bool nextQuestion() {
+    if (_questionNumber <= _questionBank.length - 1) {
       _questionNumber++;
     }
+    if (_questionNumber == _questionBank.length) {
+      _questionNumber = 0;
+      return true;
+    }
+    return false;
   }
 
   String getQuestion() {

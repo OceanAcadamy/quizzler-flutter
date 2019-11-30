@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 void main() => runApp(Quizzler());
@@ -29,12 +30,53 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Widget> scoreKeeper = [];
 
-  bool answerAndNextQuestion() {
+  void checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getAnswer();
     setState(() {
-      quizBrain.nextQuestion();
+      if (correctAnswer == userPickedAnswer) {
+        print('you got it right');
+        scoreKeeper.add(
+          Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        );
+      } else {
+        print('you got it wrong');
+        scoreKeeper.add(
+          Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+        );
+      }
+
+      bool isLastQuestion = quizBrain.nextQuestion();
+      if (isLastQuestion) {
+        scoreKeeper.clear();
+        Alert(
+          context: context,
+          type: AlertType.none,
+          style: AlertStyle(
+            isCloseButton: false,
+            isOverlayTapDismiss: false,
+          ),
+          title: "Finished!",
+          desc: "Quiz Completed",
+          buttons: [
+            DialogButton(
+              child: Text(
+                "RESTART",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        ).show();
+      }
     });
-    return correctAnswer;
   }
 
   @override
@@ -73,13 +115,8 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = answerAndNextQuestion();
-                if (correctAnswer == true) {
-                  print('you got it right');
-                } else {
-                  print('you got it wrong');
-                }
                 //The user picked true.
+                checkAnswer(true);
               },
             ),
           ),
@@ -97,13 +134,8 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = answerAndNextQuestion();
-                if (correctAnswer == false) {
-                  print('you got it right');
-                } else {
-                  print('you got it wrong');
-                }
                 //The user picked false.
+                checkAnswer(false);
               },
             ),
           ),
